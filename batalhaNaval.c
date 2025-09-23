@@ -1,22 +1,29 @@
 #include <stdio.h>
-#define TAM_T 10
-#define TAM_N 3
-#define TAM_D 3
+#define TAM_T 10 //tamanho do tabuleiro
+#define TAM_N 3  //tamanho dos navios
+#define TAM_D 3 //tamanho dos navios em diagonal
+#define TAM_H 5  //tamanho das matrizes de habilidades
+#define AFETADO 5 //valor da área atingida
+
 // Desafio Batalha Naval - MateCheck
 // Este código inicial serve como base para o desenvolvimento do sistema de Batalha Naval.
 // Siga os comentários para implementar cada parte do desafio.
 
 int main() {
-    // Nível Aventureiro - Expansão do Tabuleiro e Posicionamento Diagonal
-    // Sugestão: Expanda o tabuleiro para uma matriz 10x10.
-    // Sugestão: Posicione quatro navios no tabuleiro, incluindo dois na diagonal.
-    // Sugestão: Exiba o tabuleiro completo no console, mostrando 0 para posições vazias e 3 para posições ocupadas.
+
+    // Nível Mestre - Habilidades Especiais com Matrizes
+    // Sugestão: Crie matrizes para representar habilidades especiais como cone, cruz, e octaedro.
+    // Sugestão: Utilize estruturas de repetição aninhadas para preencher as áreas afetadas por essas habilidades no tabuleiro.
+    // Sugestão: Exiba o tabuleiro com as áreas afetadas, utilizando 0 para áreas não afetadas e 1 para áreas atingidas.
 
     int tabuleiro[TAM_T][TAM_T]; // Matriz do tabuleiro
     int navioH[TAM_N]; // Navio horizontal
     int navioV[TAM_N]; // Navio vertical
     int navioD1[TAM_D]; // Navio diagonal 1
     int navioD2[TAM_D]; // Navio diagonal 2
+    int hab_cone[TAM_H][TAM_H]; //matriz de habilidade cone
+    int hab_cruz[TAM_H][TAM_H]; //matriz de habilidade cruz
+    int hab_octa[TAM_H][TAM_H]; //matriz de habilidade octaedro
 
     // escolha das coordenadas iniciais
     int linhaH = 2, colunaH = 1;     //navio na horizontal começa em tabuleiro[2][1]
@@ -31,6 +38,7 @@ int main() {
             tabuleiro[i][j] = 0;
         }
     }
+
     
     //preenchendo os vetores dos navios com valor 3
 
@@ -93,6 +101,77 @@ int main() {
         return 1;
     }
 
+    //matriz de habilidade cone
+
+    int centro = TAM_H/2;  //centro das matrizes de habilidade
+    int origemConeLinha = 2, origemConeColuna = 5; // Ponto de origem do cone no tabuleiro
+
+    for (int i=0; i<TAM_H; i++){
+        for (int j=0; j<TAM_H; j++){
+
+            int valor = 0;
+
+            // Condição para formar um cone (triângulo)
+            if (j >= centro - i && j <= centro + i && i <= centro)
+                valor = 1;
+    
+            if (valor == 1){
+                // Converter coordenadas da matriz do cone para o tabuleiro
+                int linha = origemConeLinha - centro + i;
+                int coluna = origemConeColuna - centro + j;
+                
+                // Garantir que as coordenadas estão dentro do tabuleiro
+                if (linha >= 0 && linha < TAM_T && coluna >= 0 && coluna < TAM_T) {
+                // Marca como afetado (5) apenas se não houver navio
+                    if (tabuleiro[linha][coluna] == 0)
+                        tabuleiro[linha][coluna] = AFETADO;
+                }
+
+
+        }
+    }
+}
+    // matriz de habilidade cruz
+    int origemCruzLinha = 4, origemCruzColuna = 3; // Centro da cruz no tabuleiro
+
+    for (int i = 0; i < TAM_H; i++) {
+        for (int j = 0; j < TAM_H; j++) {
+            int valor = 0;
+            // Condição para formar uma cruz (linha e coluna centrais)
+            if (i == centro || j == centro)
+                valor = 1;
+
+            if (valor == 1) {
+                int linha = origemCruzLinha - centro + i;
+                int coluna = origemCruzColuna - centro + j;
+                if (linha >= 0 && linha < TAM_T && coluna >= 0 && coluna < TAM_T) {
+                    if (tabuleiro[linha][coluna] == 0)
+                        tabuleiro[linha][coluna] = AFETADO;
+                }
+            }
+        }
+    }
+
+    // Matriz de habilidade octaedro
+    int origemOctaedroLinha = 7, origemOctaedroColuna = 7; // Centro do octaedro no tabuleiro
+    for (int i = 0; i < TAM_H; i++) {
+        for (int j = 0; j < TAM_H; j++) {
+            // Distância de Manhattan para formar um losango (octaedro frontal)
+            int dist = (i > centro ? i - centro : centro - i) +
+                       (j > centro ? j - centro : centro - j);
+            int valor = (dist <= centro) ? 1 : 0;
+
+            if (valor == 1) {
+                int linha = origemOctaedroLinha - centro + i;
+                int coluna = origemOctaedroColuna - centro + j;
+                if (linha >= 0 && linha < TAM_T && coluna >= 0 && coluna < TAM_T) {
+                    if (tabuleiro[linha][coluna] == 0)
+                        tabuleiro[linha][coluna] = AFETADO;
+                }
+            }
+        }
+    }
+    
     // Exibindo o tabuleiro
 
     printf("Tabuleiro 10x10 (0 = agua, 3 = navio):\n\n");
@@ -107,10 +186,7 @@ int main() {
 
     
 
-    // Nível Mestre - Habilidades Especiais com Matrizes
-    // Sugestão: Crie matrizes para representar habilidades especiais como cone, cruz, e octaedro.
-    // Sugestão: Utilize estruturas de repetição aninhadas para preencher as áreas afetadas por essas habilidades no tabuleiro.
-    // Sugestão: Exiba o tabuleiro com as áreas afetadas, utilizando 0 para áreas não afetadas e 1 para áreas atingidas.
+
 
     // Exemplos de exibição das habilidades:
     // Exemplo para habilidade em cone:
